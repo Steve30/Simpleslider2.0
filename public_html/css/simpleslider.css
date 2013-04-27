@@ -1,0 +1,54 @@
+#slider-container {
+    position: relative;
+}
+.slider-holder .slider-item {
+    background: #000;
+    width: 150px;
+    height: 150px;
+    margin: 0 15px 0 0;
+    font-size: 30px;
+    text-align: center;
+    color: #FFF;
+}
+.slider-holder ul {
+    position: relative;
+    height: 150px;
+}
+.slider-holder .slider-item.last {
+    margin: 0;
+}
+#slider-container #left-btn {
+    position: absolute;
+    left: 0;
+    background: url('../images/Arrow-left-32.png') 0 0 no-repeat;
+    width: 32px;
+    height: 32px;
+}
+#slider-container #right-btn {
+    position: absolute;
+    right: 0;
+    background: url('../images/Arrow-right-32.png') 0 0 no-repeat;
+    width: 32px;
+    height: 32px;
+}
+#slider-container .slider-pagination {
+    position: absolute;
+    left: 36px;
+    margin: 20px 0 0;
+    width: 100%;
+}
+#slider-container .slider-pagination li{
+    float: left;
+    margin: 0 5px 0 0 ;
+}
+#slider-container .slider-pagination li a {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background: #000;
+}
+#slider-container .active {
+    box-shadow: 0 0 10px #F00;
+}
+

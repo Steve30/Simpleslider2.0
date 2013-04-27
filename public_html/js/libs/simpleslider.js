@@ -5,9 +5,10 @@
 
             this.defaults = {
                 sliderItemClass: '.slider-item',
-                isDisplayAllArrows: false,
+                isDisplayAllArrows: true,
                 isAutoPlay: false,
                 isDisplayPagination: true,
+                isDiplayPaginationNumber: false,
                 displayShowItemNumber: 1,
                 onClickedItemEvent: function(el) {
                     console.info(el);
@@ -18,14 +19,15 @@
 
             this.init = function() {
                 self.sliderContainer = $(this);
-                self.sliderItems = self.sliderContainer.find(self.defaults.sliderItemClass);
+                self.sliderHolder = $(this).find('.slider-holder');
+                self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
                 self.listContainerWidth = 0;
                 self.leftBtnId = 'left-btn';
                 self.rightBtnId = 'right-btn';
                 self.arrowWidth = null;
                 self.arrowHeight = null;
                 self.oneItemWidth = null;
-                self.listContainer = self.sliderContainer.find('ul').eq(0);
+                self.listContainer = self.sliderHolder.find('ul').eq(0);
                 self.paginationListContainer = 'slider-pagination';
                 self.paginationNumber = null;
                 self.sliderContainerWidth = null;
@@ -33,6 +35,8 @@
                 self.itemNumber = null;
                 self.allPaginationButton = null;
                 self.changePagination = false;
+                self.activeIndex = null;
+                self.slideIndex = null;
             };
 
             this.buildSlider = function() {
@@ -54,7 +58,7 @@
 
                 self.sliderContainerWidth = self.defaults.displayShowItemNumber * self.oneItemWidth;
 
-                self.sliderContainer.css({
+                self.sliderHolder.css({
                     width: self.sliderContainerWidth - self.itemMarginVal + 'px',
                     overflow: 'hidden'
                 });
@@ -64,18 +68,21 @@
                 });
 
                 self.addSliderArrow();
-                self.addSliderPagination();
+                if (self.defaults.isDisplayPagination === true) {
+                    self.addSliderPagination();
+                }
+             
             };
 
             this.addSliderArrow = function() {
-                var containerHeight = $('.slider-buttons').outerHeight(true);
+                var containerHeight = self.sliderContainer.outerHeight(true);
 
-                $('.slider-buttons').prepend('<a href=# id="' + self.leftBtnId + '" class="arrows"><-</a>');
-                $('.slider-buttons').append('<a href=# id="' + self.rightBtnId + '" class="arrows">-></a>');
+                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows">&nbsp;</a>');
+                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows">&nbsp;</a>');
 
                 self.displayLeftBtn('none');
 
-                $('.slider-buttons').find('.arrows').each(function() {
+                self.sliderContainer.find('.arrows').each(function() {
                     if (self.arrowWidth === null) {
                         self.arrowWidth = $(this).outerWidth(true);
                         self.arrowHeight = $(this).outerHeight(true);
@@ -88,7 +95,7 @@
 
                 });
 
-                $('.slider-buttons').css({
+                self.sliderContainer.css({
                     position: 'relative',
                     width: self.sliderContainerWidth - self.itemMarginVal + 'px',
                     paddingLeft: self.arrowWidth + 'px',
@@ -97,6 +104,40 @@
                 });
 
 
+            };
+            
+            this.displayLeftBtn = function(type) {
+                if (self.defaults.isDisplayAllArrows !== true) {
+                    $('#' + self.leftBtnId).css({
+                        display: type
+                    });
+                }
+            };
+            
+            this.addSliderPagination = function() {
+                if (self.defaults.isDisplayPagination === true) {
+                    var sumOfItems = self.defaults.displayShowItemNumber,
+                            listHtml = '', text;
+
+                    if (sumOfItems === 1) {
+                        sumOfItems = self.sliderItems.length;
+                    }
+                    ;
+                    
+                    for (var i = 1; i <= sumOfItems; i++) {
+                        
+                        text = (self.defaults.isDiplayPaginationNumber === true) ? i : '&nbsp;';
+                        
+                        listHtml += '<li><a href="#" data-item-number=' + i + '>' + text + '</a></li>';
+                    }
+                    ;
+
+                    self.sliderContainer.append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
+
+                    self.allPaginationButton = $('.' + self.paginationListContainer).find('a');
+
+                    self.allPaginationButton.eq(0).addClass('active');
+                }
             };
 
             this.replaceItem = function(state) {
@@ -109,10 +150,6 @@
                         marginLeft: -self.oneItemWidth + 'px'
                     });
 
-                    if (self.defaults.isDisplayPagination === true) {
-                        self.changePaginationItemPosition(state);
-                    }
-
                 } else if (state === 'last') {
 
                     self.changeItemPosition(state);
@@ -120,13 +157,14 @@
                     self.listContainer.css({
                         marginLeft: 0
                     });
-
-                    if (self.defaults.isDisplayPagination === true) {
-                        self.changePaginationItemPosition(state);
-                    }
+                    
                 }
 
-                self.sliderItems = self.sliderContainer.find(self.defaults.sliderItemClass);
+                if (self.defaults.isDisplayPagination === true) {
+                    self.changePaginationItemPosition(state);
+                }
+
+                self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
 
                 self.sliderItems.css({
                     float: 'left'
@@ -140,46 +178,42 @@
             };
 
             this.changePaginationItemPosition = function(type) {
-                
+
                 if (type === 'begin') {
 
-                   var activeIndex;
+                    self.setActiveIndex();
 
-                    self.allPaginationButton.each(function(index) {
-                        if ($(this).hasClass('active')) {
-                            $(this).removeClass('active');
-                            activeIndex = index;
-                        }
-                    });
-
-                    if (activeIndex === self.allPaginationButton.length - 1) {
-                        activeIndex = self.allPaginationButton.length - 1;
+                    if (self.activeIndex === self.allPaginationButton.length - 1) {
+                        self.activeIndex = self.allPaginationButton.length - 2;
                     } else {
-                        activeIndex--;
+                        self.activeIndex--;
                     }
 
-                    self.allPaginationButton.eq(activeIndex).addClass('active');
+                    self.allPaginationButton.eq(self.activeIndex).addClass('active');
 
                 } else {
-                    var activeIndex;
 
-                    self.allPaginationButton.each(function(index) {
-                        if ($(this).hasClass('active')) {
-                            $(this).removeClass('active');
-                            activeIndex = index;
-                        }
-                    });
+                    self.setActiveIndex();
 
-                    if (activeIndex === self.allPaginationButton.length - 1) {
-                        activeIndex = 0;
+                    if (self.activeIndex === self.allPaginationButton.length - 1) {
+                        self.activeIndex = 0;
                     } else {
-                        activeIndex++;
+                        self.activeIndex++;
                     }
 
-                    self.allPaginationButton.eq(activeIndex).addClass('active');
+                    self.allPaginationButton.eq(self.activeIndex).addClass('active');
 
                 }
 
+            };
+
+            this.setActiveIndex = function() {
+                self.allPaginationButton.each(function(index) {
+                    if ($(this).hasClass('active')) {
+                        $(this).removeClass('active');
+                        self.activeIndex = index;
+                    }
+                });
             };
 
             this.changeItemPosition = function(type) {
@@ -203,6 +237,8 @@
                 }
 
             };
+            
+            
 
             this.arrowsEvents = function() {
                 $('.arrows').each(function() {
@@ -237,7 +273,7 @@
                                                 self.sliderItems.eq(self.sliderItems.length - 1).after(htmlTexts[i]);
                                             }
 
-                                            self.sliderItems = self.sliderContainer.find(self.defaults.sliderItemClass);
+                                            self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
 
                                             $('.last').removeClass('last');
 
@@ -275,16 +311,6 @@
                 });
             };
 
-
-
-            this.displayLeftBtn = function(type) {
-                if (self.defaults.isDisplayAllArrows !== true) {
-                    $('#' + self.leftBtnId).css({
-                        display: type
-                    });
-                }
-            };
-
             this.addSliderItemEvents = function() {
                 self.sliderItems.on({
                     'click.slideItemEvent': function(e) {
@@ -304,39 +330,6 @@
                     }
                 });
 
-            };
-
-            this.removeSliderItemEvents = function() {
-                self.sliderItems.off('.slideItemEvent');
-            };
-
-            this.addSliderEvents = function() {
-                self.arrowsEvents();
-                self.addSliderItemEvents();
-                self.addPaginationEvents();
-            };
-
-            this.addSliderPagination = function() {
-                if (self.defaults.isDisplayPagination === true) {
-                    var sumOfItems = self.defaults.displayShowItemNumber,
-                            listHtml = '';
-
-                    if (sumOfItems === 1) {
-                        sumOfItems = self.sliderItems.length;
-                    }
-                    ;
-
-                    for (var i = 1; i <= sumOfItems; i++) {
-                        listHtml += '<li><a href="#" data-item-number=' + i + '>' + i + '</a></li>';
-                    }
-                    ;
-
-                    $('.slider-buttons').append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
-
-                    self.allPaginationButton = $('.' + self.paginationListContainer).find('a');
-
-                    self.allPaginationButton.eq(0).addClass('active');
-                }
             };
 
             this.addPaginationEvents = function() {
@@ -364,6 +357,15 @@
                             }
                         });
 
+                        self.sliderItems.each(function(index) {
+                            if ($(this).data('slider-number') === activeEl.data('item-number')) {
+                                self.slideIndex = index + 1;
+                            }
+                        });
+
+                        if (activeNumber !== self.slideIndex) {
+                            activeNumber = self.slideIndex;
+                        }
 
                         var marginLeftValue = parseInt(self.listContainer.css('margin-left'));
 
@@ -412,6 +414,18 @@
                 self.listContainer.animate(animObj, 'slow', function() {
                     self.displayLeftBtn('block');
                 });
+            };
+
+            this.addSliderEvents = function() {
+                self.arrowsEvents();
+                self.addSliderItemEvents();
+                if (self.defaults.isDisplayPagination === true) {
+                    self.addPaginationEvents();
+                } 
+            };
+
+            this.removeSliderItemEvents = function() {
+                self.sliderItems.off('.slideItemEvent');
             };
 
             constructor = function() {
