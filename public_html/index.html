@@ -1,0 +1,89 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="css/default.css" />
+        <script src="js/libs/jquery-1.9.0/jquery.min.js" type="text/javascript"></script>
+        <script src="js/libs/simpleslider.js" type="text/javascript"></script>
+        <style>
+            #layout {
+                position: relative;
+                width: 1024px;
+                height: 100%;
+                margin: 0 auto;
+                border-left: solid 1px #000;
+                border-right: solid 1px #000;
+            }
+            
+            #slider-buttons {
+                position: relative;
+            }
+            #slider-container .slider-item {
+                background: #000;
+                width: 150px;
+                height: 150px;
+                margin: 0 15px 0 0;
+                font-size: 30px;
+                text-align: center;
+                color: #FFF;
+            }
+            #slider-container ul {
+                position: relative;
+                height: 150px;
+            }
+                #slider-container .slider-item.last {
+                    margin: 0;
+                }
+            .slider-buttons #left-btn {
+                position: absolute;
+                left: 0;
+            }
+            .slider-buttons #right-btn {
+                position: absolute;
+                right: 0;
+            }
+            .slider-buttons .slider-pagination {
+               position: absolute;
+               left: 4px;
+               margin: 20px 0 0;
+               width: 100%;
+            }
+            .slider-buttons .slider-pagination li{
+                float: left;
+            }
+            .slider-buttons .slider-pagination li a {
+                padding: 0 10px;
+            }
+            .slider-buttons .active {
+                color: #FC0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="layout">
+            <div class="slider-buttons">
+                <div id="slider-container">
+                    <ul>
+                        <li class="slider-item" data-slider-number="1">1</li>
+                        <li class="slider-item" data-slider-number="2">2</li>
+                        <li class="slider-item" data-slider-number="3">3</li>
+                        <li class="slider-item" data-slider-number="4">4</li>
+                        <li class="slider-item" data-slider-number="5">5</li>
+                        <li class="slider-item last" data-slider-number="6">6</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="clear">&nbsp;</div>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#slider-container').simpleslider();
+            })
+        </script>
+    </body>
+</html>
