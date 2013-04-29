@@ -20,22 +20,29 @@
 #slider-container #left-btn {
     position: absolute;
     left: 0;
-    background: url('../images/Arrow-left-32.png') 0 0 no-repeat;
-    width: 32px;
-    height: 32px;
+    margin: 0 25px 0 0;
 }
+    #slider-container #left-btn span {
+        background: url('../images/Arrow-left-32.png') 0 0 no-repeat;
+        width: 32px;
+        height: 32px;
+        float: left;
+    }
 #slider-container #right-btn {
     position: absolute;
-    right: 0;
-    background: url('../images/Arrow-right-32.png') 0 0 no-repeat;
-    width: 32px;
-    height: 32px;
+    right: 0;   
 }
+    #slider-container #right-btn span {
+        background: url('../images/Arrow-right-32.png') 0 0 no-repeat;
+        width: 32px;
+        height: 32px;
+        float: left;
+        margin: 0 0 0 25px;
+    }
 #slider-container .slider-pagination {
     position: absolute;
-    left: 36px;
+    left: 60px;
     margin: 20px 0 0;
-    width: 100%;
 }
 #slider-container .slider-pagination li{
     float: left;

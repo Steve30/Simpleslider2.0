@@ -5,11 +5,16 @@
 
             this.defaults = {
                 sliderItemClass: '.slider-item',
-                isDisplayAllArrows: true,
-                isAutoPlay: false,
-                isDisplayPagination: true,
+                navigationItems: {
+                    enableArrows: true,
+                    enablePagination: true
+                },
+                animateSpeed: '1000',
+                animateEasing: 'swing',
+                enableAllArrows: true,
+                isAutoPlay: false, // Is not work, but under construction
                 isDiplayPaginationNumber: false,
-                displayShowItemNumber: 1,
+                displayShowItemNumber: 1, // This work normal, if the pagination disabled, but under fixing
                 onClickedItemEvent: function(el) {
                     console.info(el);
                 }
@@ -17,28 +22,52 @@
 
             this.options = $.extend(this.defaults, options);
 
+            /**
+             *  This is an init function, which set the variable
+             */
             this.init = function() {
+                self.navigationItems = self.defaults.navigationItems;
+
                 self.sliderContainer = $(this);
+                self.sliderContainerWidth = null;
                 self.sliderHolder = $(this).find('.slider-holder');
                 self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
-                self.listContainerWidth = 0;
-                self.leftBtnId = 'left-btn';
-                self.rightBtnId = 'right-btn';
-                self.arrowWidth = null;
-                self.arrowHeight = null;
-                self.oneItemWidth = null;
+
                 self.listContainer = self.sliderHolder.find('ul').eq(0);
-                self.paginationListContainer = 'slider-pagination';
-                self.paginationNumber = null;
-                self.sliderContainerWidth = null;
+                self.listContainerWidth = 0;
+
+                self.oneItemWidth = null;
                 self.itemMarginVal = null;
-                self.itemNumber = null;
-                self.allPaginationButton = null;
-                self.changePagination = false;
-                self.activeIndex = null;
-                self.slideIndex = null;
+
+                for (var item in self.navigationItems) {
+
+                    if (item === 'enableArrows' && self.navigationItems[item] === true) {
+
+                        self.leftBtnId = 'left-btn';
+                        self.rightBtnId = 'right-btn';
+                        self.arrowWidth = null;
+                        self.arrowHeight = null;
+                        self.isSetArrow = self.navigationItems[item];
+
+                    } else if (item === 'enablePagination' && self.navigationItems[item] === true) {
+
+                        self.paginationListContainer = 'slider-pagination';
+                        self.paginationNumber = null;
+                        self.allPaginationButton = null;
+                        self.changePagination = false;
+                        self.activeIndex = null;
+                        self.activeClass = 'active';
+                        self.slideIndex = null;
+                        self.isSetPagination = self.navigationItems[item];
+
+                    }
+                }
+
             };
 
+            /**
+             *  This function build the slider
+             */
             this.buildSlider = function() {
 
                 self.sliderItems.each(function(index) {
@@ -66,19 +95,33 @@
                 self.listContainer.css({
                     width: self.listContainerWidth + 'px'
                 });
+                
+                self.setContainerWidth = self.sliderContainerWidth - self.itemMarginVal;
+                
+                self.sliderContainer.css({
+                    position: 'relative',
+                    width: self.setContainerWidth + 'px',
+                    margin: '0 auto'
+                });
+                
+                if (self.isSetArrow === true) {
+                    self.addSliderArrow();
+                }
 
-                self.addSliderArrow();
-                if (self.defaults.isDisplayPagination === true) {
+                if (self.isSetPagination === true) {
                     self.addSliderPagination();
                 }
-             
+                       
             };
 
+            /**
+             *  This function add slider arrow(s)
+             */
             this.addSliderArrow = function() {
                 var containerHeight = self.sliderContainer.outerHeight(true);
 
-                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows">&nbsp;</a>');
-                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows">&nbsp;</a>');
+                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows"><span>&nbsp;</span></a>');
+                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows"><span>&nbsp;</span></a>');
 
                 self.displayLeftBtn('none');
 
@@ -96,50 +139,59 @@
                 });
 
                 self.sliderContainer.css({
-                    position: 'relative',
-                    width: self.sliderContainerWidth - self.itemMarginVal + 'px',
                     paddingLeft: self.arrowWidth + 'px',
-                    paddingRight: self.arrowWidth + 'px',
-                    margin: '0 auto'
+                    paddingRight: self.arrowWidth + 'px'
                 });
-
-
+    
             };
-            
+
+            /**
+             *  This function display the left arrow, if enableAllArrows is true
+             *  
+             *  @param {string} type   If none, not display. If block, is display 
+             */
             this.displayLeftBtn = function(type) {
-                if (self.defaults.isDisplayAllArrows !== true) {
+                if (self.defaults.enableAllArrows !== true) {
                     $('#' + self.leftBtnId).css({
                         display: type
                     });
                 }
             };
-            
+
+            /**
+             *  This function add pagination
+             */
             this.addSliderPagination = function() {
-                if (self.defaults.isDisplayPagination === true) {
-                    var sumOfItems = self.defaults.displayShowItemNumber,
-                            listHtml = '', text;
+                var sumOfItems = self.defaults.displayShowItemNumber,
+                        listHtml = '', text, paginationContainer;
 
-                    if (sumOfItems === 1) {
-                        sumOfItems = self.sliderItems.length;
-                    }
-                    ;
-                    
-                    for (var i = 1; i <= sumOfItems; i++) {
-                        
-                        text = (self.defaults.isDiplayPaginationNumber === true) ? i : '&nbsp;';
-                        
-                        listHtml += '<li><a href="#" data-item-number=' + i + '>' + text + '</a></li>';
-                    }
-                    ;
-
-                    self.sliderContainer.append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
-
-                    self.allPaginationButton = $('.' + self.paginationListContainer).find('a');
-
-                    self.allPaginationButton.eq(0).addClass('active');
+                if (sumOfItems === 1) {
+                    sumOfItems = self.sliderItems.length;
                 }
+                ;
+
+                for (var i = 1; i <= sumOfItems; i++) {
+
+                    text = (self.defaults.isDiplayPaginationNumber === true) ? i : '&nbsp;';
+
+                    listHtml += '<li><a href="#" data-item-number=' + i + '>' + text + '</a></li>';
+                }
+                ;
+
+                self.sliderContainer.append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
+                
+                paginationContainer = $('.' + self.paginationListContainer);
+                
+                self.allPaginationButton = paginationContainer.find('a');
+
+                self.allPaginationButton.eq(0).addClass(self.activeClass);
             };
 
+            /**
+             *  This function replace item, when click arrow(s)
+             *  
+             *  @param {string} state  If begin, replace the begin items, which not see. If last, replace the last items, which not see
+             */
             this.replaceItem = function(state) {
 
                 if (state === 'begin') {
@@ -157,10 +209,10 @@
                     self.listContainer.css({
                         marginLeft: 0
                     });
-                    
+
                 }
 
-                if (self.defaults.isDisplayPagination === true) {
+                if (self.isSetPagination === true) {
                     self.changePaginationItemPosition(state);
                 }
 
@@ -176,7 +228,11 @@
                 self.addSliderItemEvents();
 
             };
-
+            /**
+             *  This function change the pagination style
+             *  
+             *  @param {string} type  Begin or last
+             */
             this.changePaginationItemPosition = function(type) {
 
                 if (type === 'begin') {
@@ -189,7 +245,7 @@
                         self.activeIndex--;
                     }
 
-                    self.allPaginationButton.eq(self.activeIndex).addClass('active');
+                    self.allPaginationButton.eq(self.activeIndex).addClass(self.activeClass);
 
                 } else {
 
@@ -201,21 +257,29 @@
                         self.activeIndex++;
                     }
 
-                    self.allPaginationButton.eq(self.activeIndex).addClass('active');
+                    self.allPaginationButton.eq(self.activeIndex).addClass(self.activeClass);
 
                 }
 
             };
 
+            /**
+             * This function set the active index element and remove class
+             */
             this.setActiveIndex = function() {
                 self.allPaginationButton.each(function(index) {
-                    if ($(this).hasClass('active')) {
-                        $(this).removeClass('active');
+                    if ($(this).hasClass(self.activeClass)) {
+                        $(this).removeClass(self.activeClass);
                         self.activeIndex = index;
                     }
                 });
             };
 
+            /**
+             * This function change the item position, when click on the arrow
+             * 
+             * @param {string} type  Begin or last
+             */
             this.changeItemPosition = function(type) {
 
                 var item, htmlObj;
@@ -237,10 +301,11 @@
                 }
 
             };
-            
-            
 
-            this.arrowsEvents = function() {
+            /**
+             *  This function add events for the arrow element(s)
+             */
+            this.addArrowsEvents = function() {
                 $('.arrows').each(function() {
 
                     $(this).on({
@@ -253,7 +318,7 @@
 
                             if (id === self.rightBtnId) {
 
-                                if (self.defaults.isDisplayPagination === true) {
+                                if (self.isSetPagination === true) {
                                     self.changePagination = true;
                                 }
 
@@ -275,7 +340,7 @@
 
                                             self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
 
-                                            $('.last').removeClass('last');
+                                            self.sliderItems.filter('.last').removeClass('last');
 
                                             self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
 
@@ -297,7 +362,7 @@
 
                                 if (marginLeftValue === 0) {
                                     self.replaceItem('begin');
-                                } else if (self.defaults.isDisplayPagination === true) {
+                                } else if (self.isSetPagination === true) {
                                     self.changePaginationItemPosition('begin');
                                 }
 
@@ -311,6 +376,9 @@
                 });
             };
 
+            /**
+             *  This function add events for the slider items
+             */
             this.addSliderItemEvents = function() {
                 self.sliderItems.on({
                     'click.slideItemEvent': function(e) {
@@ -332,6 +400,9 @@
 
             };
 
+            /**
+             *  This function add events for the pagination
+             */
             this.addPaginationEvents = function() {
 
                 self.allPaginationButton.on({
@@ -344,11 +415,11 @@
                         var activeEl = $(this),
                                 activeNumber;
 
-                        if ($(this).hasClass('active')) {
+                        if ($(this).hasClass(self.activeClass)) {
                             return false;
                         } else {
-                            $('.active').removeClass('active');
-                            $(this).addClass('active');
+                            $('.' + self.activeClass).removeClass(self.activeClass);
+                            $(this).addClass(self.activeClass);
                         }
 
                         self.allPaginationButton.each(function(index) {
@@ -398,6 +469,12 @@
                 });
             };
 
+            /**
+             *  This function is animate the item margin left
+             *  
+             *  @param {string} type    Animate margin direction, left or right
+             *  @param {number} num     Number of displayed item number
+             */
             this.animateMarginLeft = function(type, num) {
                 var animObj;
 
@@ -411,23 +488,41 @@
                     };
                 }
 
-                self.listContainer.animate(animObj, 'slow', function() {
-                    self.displayLeftBtn('block');
-                });
+                self.listContainer.animate(
+                        animObj,
+                        self.defaults.animateSpeed,
+                        self.defaults.animateEasing,
+                        function() {
+                            self.displayLeftBtn('block');
+                        }
+                );
             };
 
+            /**
+             *  This function add events for the slider plugin
+             */
             this.addSliderEvents = function() {
-                self.arrowsEvents();
+
                 self.addSliderItemEvents();
-                if (self.defaults.isDisplayPagination === true) {
+
+                if (self.isSetArrow === true) {
+                    self.addArrowsEvents();
+                }
+                if (self.isSetPagination === true) {
                     self.addPaginationEvents();
-                } 
+                }
             };
 
+            /**
+             *  This function remove slider item event
+             */
             this.removeSliderItemEvents = function() {
                 self.sliderItems.off('.slideItemEvent');
             };
 
+            /**
+             *  This is a constuctor function, which run automatically, when the plugin is set the webpage
+             */
             constructor = function() {
                 self.init();
                 self.buildSlider();
