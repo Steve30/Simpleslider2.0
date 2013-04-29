@@ -11,6 +11,7 @@
                 },
                 animateSpeed: '1000',
                 animateEasing: 'swing',
+                paginationListContainer: 'slider-pagination',
                 enableAllArrows: true,
                 isAutoPlay: false, // Is not work, but under construction
                 isDiplayPaginationNumber: false,
@@ -51,7 +52,7 @@
 
                     } else if (item === 'enablePagination' && self.navigationItems[item] === true) {
 
-                        self.paginationListContainer = 'slider-pagination';
+                        self.paginationListContainer = self.defaults.paginationListContainer;
                         self.paginationNumber = null;
                         self.allPaginationButton = null;
                         self.changePagination = false;
@@ -170,9 +171,9 @@
                 }
                 ;
 
-                for (var i = 1; i <= sumOfItems; i++) {
+                for (var i = 0; i <= sumOfItems - 1; i++) {
 
-                    text = (self.defaults.isDiplayPaginationNumber === true) ? i : '&nbsp;';
+                    text = (self.defaults.isDiplayPaginationNumber === true) ? (i + 1) : '&nbsp;';
 
                     listHtml += '<li><a href="#" data-item-number=' + i + '>' + text + '</a></li>';
                 }
