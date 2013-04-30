@@ -13,9 +13,10 @@
                 animateEasing: 'swing',
                 paginationListContainer: 'slider-pagination',
                 enableAllArrows: true,
-                isAutoPlay: false, // Is not work, but under construction
+                isAutoPlay: false, 
                 isDiplayPaginationNumber: false,
-                displayShowItemNumber: 1, // This work normal, if the pagination disabled, but under fixing
+                displayShowItemNumber: 1,
+                enableItemClickEvent: false,
                 onClickedItemEvent: function(el) {
                     console.info(el);
                 }
@@ -39,7 +40,8 @@
 
                 self.oneItemWidth = null;
                 self.itemMarginVal = null;
-
+                self.isSetItemEvent = self.defaults.enableItemClickEvent;
+                
                 for (var item in self.navigationItems) {
 
                     if (item === 'enableArrows' && self.navigationItems[item] === true) {
@@ -503,9 +505,11 @@
              *  This function add events for the slider plugin
              */
             this.addSliderEvents = function() {
-
-                self.addSliderItemEvents();
-
+                
+                if (self.isSetItemEvent === true) {
+                   self.addSliderItemEvents(); 
+                }
+                
                 if (self.isSetArrow === true) {
                     self.addArrowsEvents();
                 }
