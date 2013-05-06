@@ -227,8 +227,10 @@
 
                 self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
 
-                self.removeSliderItemEvents();
-                self.addSliderItemEvents();
+                if (self.isSetItemEvent === true) {
+                   self.removeSliderItemEvents();
+                   self.addSliderItemEvents();
+                }
 
             };
             /**
@@ -490,11 +492,10 @@
                         marginLeft: '+=' + (num * self.oneItemWidth) + 'px'
                     };
                 }
-
                 self.listContainer.animate(
                         animObj,
-                        self.defaults.animateSpeed,
-                        self.defaults.animateEasing,
+                        self.options.animateSpeed,
+                        self.options.animateEasing,
                         function() {
                             self.displayLeftBtn('block');
                         }
