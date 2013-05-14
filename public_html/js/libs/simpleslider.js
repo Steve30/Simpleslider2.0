@@ -9,11 +9,15 @@
                     enableArrows: true,
                     enablePagination: true
                 },
+                leftBtnId: 'left-btn',
+                rightBtnId: 'right-btn',
+                leftBtnString: '',
+                rightBtnString: '',
                 animateSpeed: '1000',
                 animateEasing: 'swing',
                 paginationListContainer: 'slider-pagination',
                 enableAllArrows: true,
-                isAutoPlay: false, 
+                isAutoPlay: false,
                 isDiplayPaginationNumber: false,
                 displayShowItemNumber: 1,
                 enableItemClickEvent: false,
@@ -41,13 +45,13 @@
                 self.oneItemWidth = null;
                 self.itemMarginVal = null;
                 self.isSetItemEvent = self.defaults.enableItemClickEvent;
-                
+
                 for (var item in self.navigationItems) {
 
                     if (item === 'enableArrows' && self.navigationItems[item] === true) {
 
-                        self.leftBtnId = 'left-btn';
-                        self.rightBtnId = 'right-btn';
+                        self.leftBtnId = self.defaults.leftBtnId;
+                        self.rightBtnId = self.defaults.rightBtnId;
                         self.arrowWidth = null;
                         self.arrowHeight = null;
                         self.isSetArrow = self.navigationItems[item];
@@ -98,15 +102,35 @@
                 self.listContainer.css({
                     width: self.listContainerWidth + 'px'
                 });
-                
+
                 self.setContainerWidth = self.sliderContainerWidth - self.itemMarginVal;
-                
+
                 self.sliderContainer.css({
                     position: 'relative',
                     width: self.setContainerWidth + 'px',
                     margin: '0 auto'
                 });
-                
+
+                if (self.sliderItems.filter('.selected').length === 1) {
+                    
+                    self.sliderItems.each(function() {
+                        var itemEl = $(this).eq(0);
+                        
+                        if ($(this).hasClass('selected')) {
+                            return false;
+                        } else {
+                            var sumOfItems = self.sliderItems.length - 1;
+                            
+                            self.sliderItems.eq(sumOfItems).removeClass('last').after(itemEl);
+                            
+                            self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
+                            
+                            self.sliderItems.eq(sumOfItems).addClass('last');
+                        }
+                        
+                    });
+                }
+
                 if (self.isSetArrow === true) {
                     self.addSliderArrow();
                 }
@@ -114,17 +138,27 @@
                 if (self.isSetPagination === true) {
                     self.addSliderPagination();
                 }
-                       
+
             };
 
             /**
              *  This function add slider arrow(s)
              */
             this.addSliderArrow = function() {
-                var containerHeight = self.sliderContainer.outerHeight(true);
+                var containerHeight = self.sliderContainer.outerHeight(true),
+                        leftBtnString = '',
+                        rightBtnString = '';
 
-                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows"><span>&nbsp;</span></a>');
-                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows"><span>&nbsp;</span></a>');
+                if (self.defaults.leftBtnString !== '') {
+                    leftBtnString = '<span class=string>' + self.defaults.leftBtnString + '</span>';
+                }
+
+                if (self.defaults.rightBtnString !== '') {
+                    rightBtnString = '<span class=string>' + self.defaults.rightBtnString + '</span>';
+                }
+
+                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows"><span>&nbsp;</span>' + leftBtnString + '</a>');
+                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows"><span>&nbsp;</span>' + rightBtnString + '</a>');
 
                 self.displayLeftBtn('none');
 
@@ -145,7 +179,7 @@
                     paddingLeft: self.arrowWidth + 'px',
                     paddingRight: self.arrowWidth + 'px'
                 });
-    
+
             };
 
             /**
@@ -182,9 +216,9 @@
                 ;
 
                 self.sliderContainer.append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
-                
+
                 paginationContainer = $('.' + self.paginationListContainer);
-                
+
                 self.allPaginationButton = paginationContainer.find('a');
 
                 self.allPaginationButton.eq(0).addClass(self.activeClass);
@@ -228,8 +262,8 @@
                 self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
 
                 if (self.isSetItemEvent === true) {
-                   self.removeSliderItemEvents();
-                   self.addSliderItemEvents();
+                    self.removeSliderItemEvents();
+                    self.addSliderItemEvents();
                 }
 
             };
@@ -506,11 +540,11 @@
              *  This function add events for the slider plugin
              */
             this.addSliderEvents = function() {
-                
+
                 if (self.isSetItemEvent === true) {
-                   self.addSliderItemEvents(); 
+                    self.addSliderItemEvents();
                 }
-                
+
                 if (self.isSetArrow === true) {
                     self.addArrowsEvents();
                 }
