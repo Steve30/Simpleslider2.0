@@ -21,6 +21,7 @@
                 isDiplayPaginationNumber: false,
                 displayShowItemNumber: 1,
                 enableItemClickEvent: false,
+                position: 'relative',
                 onClickedItemEvent: function(el) {
                     console.info(el);
                 }
@@ -106,7 +107,7 @@
                 self.setContainerWidth = self.sliderContainerWidth - self.itemMarginVal;
 
                 self.sliderContainer.css({
-                    position: 'relative',
+                    position: self.defaults.position,
                     width: self.setContainerWidth + 'px',
                     margin: '0 auto'
                 });
