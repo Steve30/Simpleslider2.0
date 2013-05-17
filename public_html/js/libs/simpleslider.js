@@ -6,19 +6,34 @@
             this.defaults = {
                 sliderItemClass: '.slider-item',
                 navigationItems: {
-                    enableArrows: true,
-                    enablePagination: true
+                    arrows: {
+                        enabled: true,
+                        isStartAllArrows: true,
+                        leftArrow: {
+                            btnId: 'left-btn',
+                            btnString: ''
+                        },
+                        rightArrow: {
+                            btnId: 'right-btn',
+                            btnString: ''
+                        }
+                    },
+                    pagination: {
+                        enabled: true,
+                        properties: {
+                            listContainerClass: 'slider-pagination',
+                            isDiplayNumber: false
+                        }
+                    }
                 },
-                leftBtnId: 'left-btn',
-                rightBtnId: 'right-btn',
-                leftBtnString: '',
-                rightBtnString: '',
-                animateSpeed: '1000',
-                animateEasing: 'swing',
-                paginationListContainer: 'slider-pagination',
-                enableAllArrows: true,
-                isAutoPlay: false,
-                isDiplayPaginationNumber: false,
+                autoPlayProperties: {
+                    enabled: false,
+                    timeValue: 1000
+                },
+                animationProperties: {
+                    speed: 1000,
+                    easing: 'swing'
+                },
                 displayShowItemNumber: 1,
                 enableItemClickEvent: false,
                 position: 'relative',
@@ -27,50 +42,58 @@
                 }
             };
 
-            this.options = $.extend(this.defaults, options);
+
 
             /**
              *  This is an init function, which set the variable
              */
-            this.init = function() {
-                self.navigationItems = self.defaults.navigationItems;
+            this.init = function(opt) {
+                self.navigationItems = opt.navigationItems;
 
                 self.sliderContainer = $(this);
                 self.sliderContainerWidth = null;
                 self.sliderHolder = $(this).find('.slider-holder');
-                self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
+                self.sliderItems = self.sliderHolder.find(opt.sliderItemClass);
 
                 self.listContainer = self.sliderHolder.find('ul').eq(0);
                 self.listContainerWidth = 0;
 
                 self.oneItemWidth = null;
                 self.itemMarginVal = null;
-                self.isSetItemEvent = self.defaults.enableItemClickEvent;
+                self.isSetItemEvent = opt.enableItemClickEvent;
+                self.animateObj = opt.animationProperties;
+                self.displayItemNumber = opt.displayShowItemNumber;
+                self.autoPlayObj = opt.autoPlayProperties;
+                self.autoPlayTimer = undefined;
 
                 for (var item in self.navigationItems) {
 
-                    if (item === 'enableArrows' && self.navigationItems[item] === true) {
+                    var navigationObj = self.navigationItems[item];
 
-                        self.leftBtnId = self.defaults.leftBtnId;
-                        self.rightBtnId = self.defaults.rightBtnId;
+                    if (item === 'arrows' && navigationObj.enabled === true) {
+
+                        self.isStartAllArrows = navigationObj.isStartAllArrows;
+                        self.leftBtnObj = navigationObj.leftArrow;
+                        self.rightBtnObj = navigationObj.rightArrow;
                         self.arrowWidth = null;
                         self.arrowHeight = null;
-                        self.isSetArrow = self.navigationItems[item];
+                        self.isSetArrow = navigationObj.enabled;
 
-                    } else if (item === 'enablePagination' && self.navigationItems[item] === true) {
+                    } else if (item === 'pagination' && navigationObj.enabled === true) {
 
-                        self.paginationListContainer = self.defaults.paginationListContainer;
+                        self.paginationObj = navigationObj.properties;
                         self.paginationNumber = null;
                         self.allPaginationButton = null;
                         self.changePagination = false;
                         self.activeIndex = null;
                         self.activeClass = 'active';
                         self.slideIndex = null;
-                        self.isSetPagination = self.navigationItems[item];
+                        self.isSetPagination = navigationObj.enabled;
 
                     }
                 }
 
+                self.buildSlider();
             };
 
             /**
@@ -113,23 +136,27 @@
                 });
 
                 if (self.sliderItems.filter('.selected').length === 1) {
-                    
+
                     self.sliderItems.each(function() {
                         var itemEl = $(this).eq(0);
-                        
+
                         if ($(this).hasClass('selected')) {
                             return false;
                         } else {
                             var sumOfItems = self.sliderItems.length - 1;
-                            
+
                             self.sliderItems.eq(sumOfItems).removeClass('last').after(itemEl);
-                            
+
                             self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
-                            
+
                             self.sliderItems.eq(sumOfItems).addClass('last');
                         }
-                        
+
                     });
+                }
+
+                if (self.autoPlayObj.enabled === true) {
+                    self.runAutoPlay();
                 }
 
                 if (self.isSetArrow === true) {
@@ -140,6 +167,21 @@
                     self.addSliderPagination();
                 }
 
+                self.addSliderEvents();
+            };
+
+            this.runAutoPlay = function() {
+
+                self.autoPlayTimer = setInterval(function() {
+                    self.animateToNextElement(parseInt(self.listContainer.css('margin-left')));
+                }, self.autoPlayObj.timeValue);
+
+            };
+
+            this.stopAutoPlay = function() {
+                if (self.autoPlayTimer !== undefined) {
+                    clearInterval(self.autoPlayTimer);
+                }
             };
 
             /**
@@ -150,16 +192,18 @@
                         leftBtnString = '',
                         rightBtnString = '';
 
-                if (self.defaults.leftBtnString !== '') {
-                    leftBtnString = '<span class=string>' + self.defaults.leftBtnString + '</span>';
+                if (self.leftBtnObj.btnString !== '') {
+                    leftBtnString = '<span class=string>' + self.leftBtnObj.btnString + '</span>';
                 }
 
-                if (self.defaults.rightBtnString !== '') {
-                    rightBtnString = '<span class=string>' + self.defaults.rightBtnString + '</span>';
+                if (self.rightBtnObj.btnString !== '') {
+                    rightBtnString = '<span class=string>' + self.rightBtnObj.btnString + '</span>';
                 }
 
-                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnId + '" class="arrows"><span>&nbsp;</span>' + leftBtnString + '</a>');
-                self.sliderContainer.append('<a href=# id="' + self.rightBtnId + '" class="arrows"><span>&nbsp;</span>' + rightBtnString + '</a>');
+                self.sliderContainer.prepend('<a href=# id="' + self.leftBtnObj.btnId +
+                        '" class="arrows"><span>&nbsp;</span>' + leftBtnString + '</a>');
+                self.sliderContainer.append('<a href=# id="' + self.rightBtnObj.btnId +
+                        '" class="arrows"><span>&nbsp;</span>' + rightBtnString + '</a>');
 
                 self.displayLeftBtn('none');
 
@@ -189,8 +233,8 @@
              *  @param {string} type   If none, not display. If block, is display 
              */
             this.displayLeftBtn = function(type) {
-                if (self.defaults.enableAllArrows !== true) {
-                    $('#' + self.leftBtnId).css({
+                if (self.isStartAllArrows !== true) {
+                    $('#' + self.leftBtnObj.btnId).css({
                         display: type
                     });
                 }
@@ -200,7 +244,7 @@
              *  This function add pagination
              */
             this.addSliderPagination = function() {
-                var sumOfItems = self.defaults.displayShowItemNumber,
+                var sumOfItems = self.displayItemNumber,
                         listHtml = '', text, paginationContainer;
 
                 if (sumOfItems === 1) {
@@ -210,19 +254,27 @@
 
                 for (var i = 0; i <= sumOfItems - 1; i++) {
 
-                    text = (self.defaults.isDiplayPaginationNumber === true) ? (i + 1) : '&nbsp;';
+                    text = (self.paginationObj.isDiplayNumber === true) ? (i + 1) : '&nbsp;';
 
                     listHtml += '<li><a href="#" data-item-number=' + i + '>' + text + '</a></li>';
                 }
                 ;
 
-                self.sliderContainer.append('<ol class="' + self.paginationListContainer + '">' + listHtml + '</ol>');
+                self.sliderContainer.append('<ol class="' + self.paginationObj.listContainerClass + '">' + listHtml + '</ol>');
 
-                paginationContainer = $('.' + self.paginationListContainer);
+                paginationContainer = $('.' + self.paginationObj.listContainerClass);
 
                 self.allPaginationButton = paginationContainer.find('a');
 
-                self.allPaginationButton.eq(0).addClass(self.activeClass);
+                if (self.sliderItems.filter('.selected').length === 1) {
+                    var num = self.sliderItems.filter('.selected').data("slider-number");
+
+                    self.allPaginationButton.eq(num).addClass(self.activeClass);
+
+                } else {
+                    self.allPaginationButton.eq(0).addClass(self.activeClass);
+                }
+
             };
 
             /**
@@ -342,6 +394,24 @@
 
             };
 
+            this.addAutoPlayEvents = function() {
+                var eventObj;
+
+                if (self.autoPlayObj.enabled === true) {
+                    eventObj = {
+                        mouseenter: function(e) {
+                            self.stopAutoPlay();
+                        },
+                        mouseleave: function(e) {
+                            self.runAutoPlay();
+                        }
+                    };
+
+                    self.sliderContainer.on(eventObj);
+                    $('.' + self.paginationObj.listContainerClass).on(eventObj);
+                }
+            };
+
             /**
              *  This function add events for the arrow element(s)
              */
@@ -353,66 +423,78 @@
                             e.preventDefault();
                             e.stopPropagation();
 
-                            var id = $(this).attr('id'),
-                                    marginLeftValue = parseInt(self.listContainer.css('margin-left'));
+                            var id = $(this).attr('id');
 
-                            if (id === self.rightBtnId) {
+                            if (id === self.rightBtnObj.btnId) {
 
-                                if (self.isSetPagination === true) {
-                                    self.changePagination = true;
-                                }
+                                self.animateToNextElement(parseInt(self.listContainer.css('margin-left')));
 
-                                if (marginLeftValue < 0) {
-                                    var width = 0,
-                                            htmlTexts = new Array();
-                                    self.sliderItems.each(function() {
+                            } else if (id === self.leftBtnObj.btnId) {
 
-                                        width += self.oneItemWidth;
-                                        htmlTexts.push($(this).eq(0)[0]);
-
-                                        if (-marginLeftValue === width) {
-
-                                            htmlTexts.reverse();
-
-                                            for (var i = 0; i <= htmlTexts.length - 1; i++) {
-                                                self.sliderItems.eq(self.sliderItems.length - 1).after(htmlTexts[i]);
-                                            }
-
-                                            self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
-
-                                            self.sliderItems.filter('.last').removeClass('last');
-
-                                            self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
-
-                                            self.listContainer.css({
-                                                marginLeft: 0
-                                            });
-                                        }
-                                    });
-                                }
-
-                                self.listContainer.animate({
-                                    marginLeft: '-=' + self.oneItemWidth + 'px'
-                                }, 'normal', function() {
-                                    self.replaceItem('last');
-                                    self.displayLeftBtn('block');
-                                });
-
-                            } else if (id === self.leftBtnId) {
-
-                                if (marginLeftValue === 0) {
-                                    self.replaceItem('begin');
-                                } else if (self.isSetPagination === true) {
-                                    self.changePaginationItemPosition('begin');
-                                }
-
-                                self.listContainer.animate({
-                                    marginLeft: '+=' + self.oneItemWidth + 'px'
-                                }, 'normal');
+                                self.animateToPrevElement(parseInt(self.listContainer.css('margin-left')));
                             }
 
                         }
                     });
+                });
+            };
+
+            this.animateToPrevElement = function(marginLeftValue) {
+
+                if (marginLeftValue === 0) {
+                    self.replaceItem('begin');
+                } else if (self.isSetPagination === true) {
+                    self.changePaginationItemPosition('begin');
+                }
+
+                self.listContainer.animate({
+                    marginLeft: '+=' + self.oneItemWidth + 'px'
+                }, self.animateObj.speed, self.animateObj.easing);
+
+            };
+
+            this.animateToNextElement = function(marginLeftValue) {
+
+                var width = 0,
+                        htmlTexts = new Array();
+
+                if (self.isSetPagination === true) {
+                    self.changePagination = true;
+                }
+
+                if (marginLeftValue < 0) {
+
+                    self.sliderItems.each(function() {
+
+                        width += self.oneItemWidth;
+                        htmlTexts.push($(this).eq(0)[0]);
+
+                        if (-marginLeftValue === width) {
+
+                            htmlTexts.reverse();
+
+                            for (var i = 0; i <= htmlTexts.length - 1; i++) {
+                                self.sliderItems.eq(self.sliderItems.length - 1).after(htmlTexts[i]);
+                            }
+
+                            self.sliderItems = self.sliderHolder.find(self.defaults.sliderItemClass);
+
+                            self.sliderItems.filter('.last').removeClass('last');
+
+                            self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
+
+                            self.listContainer.css({
+                                marginLeft: 0
+                            });
+                        }
+                    });
+                }
+
+                self.listContainer.animate({
+                    marginLeft: '-=' + self.oneItemWidth + 'px'
+                }, self.animateObj.speed, self.animateObj.easing, function() {
+                    self.replaceItem('last');
+                    self.displayLeftBtn('block');
                 });
             };
 
@@ -437,7 +519,6 @@
 
                     }
                 });
-
             };
 
             /**
@@ -529,8 +610,8 @@
                 }
                 self.listContainer.animate(
                         animObj,
-                        self.options.animateSpeed,
-                        self.options.animateEasing,
+                        self.animateSpeed,
+                        self.animateEasing,
                         function() {
                             self.displayLeftBtn('block');
                         }
@@ -541,6 +622,8 @@
              *  This function add events for the slider plugin
              */
             this.addSliderEvents = function() {
+
+                self.addAutoPlayEvents();
 
                 if (self.isSetItemEvent === true) {
                     self.addSliderItemEvents();
@@ -565,9 +648,8 @@
              *  This is a constuctor function, which run automatically, when the plugin is set the webpage
              */
             constructor = function() {
-                self.init();
-                self.buildSlider();
-                self.addSliderEvents();
+                self.options = $.extend(self.defaults, options);
+                self.init(self.options);
             }();
         }
     });
