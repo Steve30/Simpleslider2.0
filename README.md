@@ -15,42 +15,103 @@ Before use this plugin, you use two CSS files:
 <p>
 Here is the config variables:
 </p>
-  <ul>
-    <li>
-       // This is the the li class, the parent li, which set the click event<br/>sliderItemClass: '.slider-item'
-    </li>
-    <li>
-      // This is a navigations object, which set the navigation elements<br/>navigationItems: {
-          enableArrows: true,
-          enablePagination: true
-      }
-    </li>
-    <li>
-      // This is a animation speed<br/>animateSpeed: '1000'
-    </li>
-      // This is a animation style<br/>animateEasing: 'swing',
-    <li>
-      // This is a pagination container Classname<br/>paginationListContainer: 'slider-pagination',
-    </li>
-    <li>
-       // This show two arrows, after the plugin initialize, if the value is false, just appear one arrow<br/>enableAllArrows: true,
-    </li>
-    <li>
-      // Is not work, but under construction<br/>isAutoPlay: false, 
-    </li>
-    <li>
-      // Is not work, but under construction<br/>isDiplayPaginationNumber: false,
-    </li>
-    <li>
-      // This work normal, if the number is 1, but under fixing<br/>displayShowItemNumber: 1, 
-    </li>
-      // This set the item click event<br/>enableItemClickEvent: false,
-    <li>
-      // If set the click item event, this return the clicked item element(jquery)<br/>onClickedItemEvent: function(el) {
-      console.info(el);
-  }
-    </li>
-  </ul>
-  <p>
-    For example, see in the index.html file
-  </p>
+<ul>
+	<li>
+	   sliderItemClass : '.slider-item'
+	</li>
+	<li>
+		<strong>navigationItems:</strong>
+		<ul>
+			<li>
+				<strong>arrows:</strong>
+				<ul>
+					<li>
+						enabled : true,
+					</li>
+					<li>
+						isStartAllArrows : true,
+					</li>
+					<li>
+						<strong>arrows:</strong>
+						<ul>
+							<li>
+								btnId : 'left-btn',
+							</li>
+							<li>
+								btnString : ''
+							</li>
+						</ul>
+					</li>
+					<li>
+						<strong>arrows:</strong>
+						<ul>
+							<li>
+								btnId : 'right-btn',
+							</li>
+							<li>
+								btnString : ''
+							</li>
+						</ul>
+					</li>
+					<li>
+						<strong>pagination:</strong>
+						<ul>
+							<li>
+								enabled : true,
+							</li>
+							<li>
+								<span>properties:</span>
+								<ul>
+									<li>
+										listContainerClass : 'slider-pagination',
+									</li>
+									<li>
+										isDiplayNumber : false
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			
+		</ul>
+	</li>
+	<li>
+		<strong>autoPlayProperties:</strong>
+		<ul>
+			<li>
+				 enabled : false,
+			</li>
+			<li>
+				timeValue : 1000
+			</li>
+		</ul>
+	</li>
+	<li>
+		<strong>animationProperties:</strong>
+		<ul>
+			<li>
+				speed : 1000,
+			</li>
+			<li>
+				easing : 'swing'
+			</li>
+		</ul>
+	</li>
+	<li>	
+		displayShowItemNumber : 1,
+	</li>
+	<li>
+		enableItemClickEvent : false,
+	</li>
+	<li>
+		position : 'relative',
+	</li>
+	<li>
+		onClickedItemEvent : function(el) { console.info(el); }
+	</li>
+</ul>
+<p>
+	For example, see in the index.html file
+</p>
