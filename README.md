@@ -32,7 +32,7 @@ Here is the config variables:
 						isStartAllArrows : true,
 					</li>
 					<li>
-						<strong>arrows:</strong>
+						<strong>leftArrow:</strong>
 						<ul>
 							<li>
 								btnId : 'left-btn',
@@ -43,7 +43,7 @@ Here is the config variables:
 						</ul>
 					</li>
 					<li>
-						<strong>arrows:</strong>
+						<strong>rightArrow:</strong>
 						<ul>
 							<li>
 								btnId : 'right-btn',
