@@ -4,9 +4,11 @@
     "description": "jQuery plugin for list item slides animation",
     "keywords": [
         "slider",
-        "animation"
+        "animation",
+        "jquery",
+        "galery"
     ],
-    "version": "1.0.2",
+    "version": "2.0.0",
     "author": {
         "name": "Juhász István",
         "email": "juhasz.istvan28@windowslive.com"
