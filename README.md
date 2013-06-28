@@ -4,9 +4,9 @@ simpleslider
 Slider jquery plugin
 
 Document
-<h2>
+<h3>
 There is a new way of slider plugin and the plugin creating.
-</h2>
+</h3>
 <p>
 Before use this plugin, you use two CSS files:
 <br/>Default.css // There is an Eric Meyer's reset tool
