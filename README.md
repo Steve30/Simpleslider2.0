@@ -4,17 +4,17 @@ simpleslider
 Slider jquery plugin
 
 Document
-<p>
+<h2>
 There is a new way of slider plugin and the plugin creating.
-</p>
+</h2>
 <p>
 Before use this plugin, you use two CSS files:
-  Default.css // There is an Eric Meyer's reset tool
-  simpleslider.css // The simpleslider CSS
+<br/>Default.css // There is an Eric Meyer's reset tool
+<br/>simpleslider.css // The simpleslider CSS
 </p>
-<p>
+<h3>
 Here is the config variables:
-</p>
+</h3>
 <ul>
 	<li>
 	   sliderItemClass : '.slider-item'
@@ -112,6 +112,6 @@ Here is the config variables:
 		onClickedItemEvent : function(el) { console.info(el); }
 	</li>
 </ul>
-<p>
+<h4>
 	For example, see in the index.html file
-</p>
+</h4>
