@@ -17,28 +17,28 @@ Here is the config variables:
 </h3>
 <ul>
 	<li>
-	   sliderItemClass : '.slider-item'
+	   sliderItemClass : '.slider-item' // List item class
 	</li>
 	<li>
-		<strong>navigationItems:</strong>
+		<strong>navigationItems: // Navigation item object </strong>
 		<ul>
 			<li>
-				<strong>arrows:</strong>
+				<strong>arrows: // Arrows object </strong>
 				<ul>
 					<li>
-						enabled : true,
+						enabled : true, // If true the arrow is show
 					</li>
 					<li>
-						isStartAllArrows : true,
+						isStartAllArrows : true, // If true, show two arrows at begin
 					</li>
 					<li>
 						<strong>leftArrow:</strong>
 						<ul>
 							<li>
-								btnId : 'left-btn',
+								btnId : 'left-btn', // DOM id
 							</li>
 							<li>
-								btnString : ''
+								btnString : '' // Button string
 							</li>
 						</ul>
 					</li>
@@ -54,10 +54,10 @@ Here is the config variables:
 						</ul>
 					</li>
 					<li>
-						<strong>pagination:</strong>
+						<strong>pagination: // Pagination object</strong>
 						<ul>
 							<li>
-								enabled : true,
+								enabled : true, // If true, the pagination is display
 							</li>
 							<li>
 								<span>properties:</span>
@@ -66,7 +66,7 @@ Here is the config variables:
 										listContainerClass : 'slider-pagination',
 									</li>
 									<li>
-										isDiplayNumber : false
+										isDiplayNumber : false // If true, show the pagination number
 									</li>
 								</ul>
 							</li>
@@ -78,38 +78,38 @@ Here is the config variables:
 		</ul>
 	</li>
 	<li>
-		<strong>autoPlayProperties:</strong>
+		<strong>autoPlayProperties: // Autoplay object</strong>
 		<ul>
 			<li>
-				 enabled : false,
+				enabled : false, // If true, the autoplay slide start
 			</li>
 			<li>
-				timeValue : 1000
+				timeValue : 1000 // Autoplay time
 			</li>
 		</ul>
 	</li>
 	<li>
-		<strong>animationProperties:</strong>
+		<strong>animationProperties: // Animation object</strong>
 		<ul>
 			<li>
-				speed : 1000,
+				speed : 1000, // Animation speed
 			</li>
 			<li>
-				easing : 'swing'
+				easing : 'swing' // Animation easing, use the easing.js plugin
 			</li>
 		</ul>
 	</li>
 	<li>	
-		displayShowItemNumber : 1,
+		displayShowItemNumber : 1, // Display slide item
 	</li>
 	<li>
-		enableItemClickEvent : false,
+		enableItemClickEvent : false, // If true, the slide item is clicking 
 	</li>
 	<li>
-		position : 'relative',
+		position : 'relative', // The slide container position
 	</li>
 	<li>
-		onClickedItemEvent : function(el) { console.info(el); }
+		onClickedItemEvent : function(el) { console.info(el); } // Clicked item function, el param is the clicked element
 	</li>
 </ul>
 <h4>
