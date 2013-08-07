@@ -1,8 +1,7 @@
 (function($) {
     $.fn.extend({
         simpleslider : function(options) {
-            var self = this;
-
+          
             this.defaults = {
                 sliderItemClass : '.slider-item',
                 navigationItems : {
@@ -619,16 +618,16 @@
              *  This is an init function, which set the variable
              */
             this.init = function(opt) {
-                $.proxy(self.plugin.initialize(this, opt), self.plugin);
+                $.proxy(this.plugin.initialize(this, opt), this.plugin);
             };
 
             /**
              *  This is a constuctor function, which run automatically, when the plugin is set the webpage
              */
-            constructor = function() {
-                self.options = $.extend(self.defaults, options);
-                self.init(self.options);
-            }();
+            constructor = function(plugin) {
+                plugin.options = $.extend(plugin.defaults, options);
+                plugin.init(plugin.options);
+            }(this);
         }
     });
 })(jQuery);
