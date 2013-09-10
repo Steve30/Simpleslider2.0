@@ -71,8 +71,8 @@
 
                     this.sliderContainerWidth = null;
                     this.sliderHolder = this.el.find('.slider-holder');
-                    this.sliderItems = this.sliderHolder.find(this.options.sliderItemClass);
                     this.sliderItemClass = this.options.sliderItemClass;
+                    this.sliderItems = this.sliderHolder.find(this.sliderItemClass);
 
                     this.listContainer = this.sliderHolder.find('ul').eq(0);
                     this.listContainerWidth = 0;
@@ -116,7 +116,8 @@
                     this.buildSlider();
 
                 },
-
+                
+                // Build Slider 
                 buildSlider : function() {
                     var self = this;
 
@@ -159,7 +160,8 @@
 
                     this.addSliderEvents();
                 },
-
+                
+                // Set Slider Item Style
                 setSliderItemCSS : function(self) {
 
                     this.sliderItems.each(function(index) {
@@ -178,7 +180,8 @@
                     });
 
                 },
-
+                
+                // Get selected slider item
                 getSliderItemSelected : function(self) {
 
                     this.sliderItems.each(function() {
@@ -196,7 +199,8 @@
 
                     });
                 },
-
+                
+                // Automatic play action
                 runAutoPlay : function() {
                     var self = this;
 
@@ -205,12 +209,14 @@
                     }, this.autoPlayObj.timeValue);
                 },
 
+                // Stop automatic play action
                 stopAutoPlay : function() {
                     if (this.autoPlayTimer !== undefined) {
                         clearInterval(this.autoPlayTimer);
                     }
                 },
-
+                
+                // Add arrow of slider
                 addSliderArrow : function() {
                     var containerHeight = this.el.outerHeight(true),
                         leftBtnString = '',
@@ -237,7 +243,8 @@
                         paddingRight : this.arrowWidth + 'px'
                     });
                 },
-
+                
+                // Set arrow style
                 setSliderArrowsCSS : function(self, containerHeight) {
 
                     this.el.find('.arrows').each(function() {
@@ -254,7 +261,8 @@
                     });
 
                 },
-
+                
+                // Display left arrow button
                 displayLeftBtn : function() {
                     if (this.isStartAllArrows !== true) {
                         $('#' + this.leftBtnObj.btnId).css({
@@ -262,7 +270,8 @@
                         });
                     }
                 },
-
+                
+                // Add pagination of slider
                 addSliderPagination : function() {
                     var sumOfItems = this.displayItemNumber, listHtml = '', text, paginationContainer;
 
@@ -292,7 +301,8 @@
                         this.allPaginationButton.eq(0).addClass(this.activeClass);
                     }
                 },
-
+                
+                // Replace item
                 replaceItem : function(state) {
 
                     if (state === 'begin') {
@@ -313,7 +323,7 @@
 
                     }
 
-                    if (this.isSetPagination === true) {
+                    if (this.isSetPagination === true && state !== 'begin') {
                         this.changePaginationItemPosition(state);
                     }
 
@@ -330,21 +340,22 @@
                         this.addSliderItemEvents();
                     }
                 },
-
+                
+                // Change pagination item
                 changePaginationItemPosition : function(type) {
 
                     if (type === 'begin') {
 
                         this.setActiveIndex();
-
+                       
                         if (this.activeIndex === this.allPaginationButton.length - 1) {
                             this.activeIndex = this.allPaginationButton.length - 2;
                         } else {
                             this.activeIndex--;
                         }
-
+                        
                         this.allPaginationButton.eq(this.activeIndex).addClass(this.activeClass);
-
+                       
                     } else {
 
                         this.setActiveIndex();
@@ -359,7 +370,8 @@
 
                     }
                 },
-
+                
+                // Set active item index
                 setActiveIndex : function() {
                     var self = this;
 
@@ -370,7 +382,8 @@
                         }
                     });
                 },
-
+                
+                // Change item position
                 changeItemPosition : function(type) {
                     var item, htmlObj;
 
@@ -379,7 +392,7 @@
                     } else {
                         item = this.sliderItems.eq(0);
                     }
-
+                    
                     htmlObj = item[0];
 
                     this.sliderItems.eq(this.sliderItems.length - 1).removeClass('last');
@@ -390,7 +403,8 @@
                         this.listContainer.append(htmlObj);
                     }
                 },
-
+                
+                // Add autoplay events
                 addAutoPlayEvents : function() {
                     var eventObj;
 
@@ -408,7 +422,8 @@
                         $('.' + this.paginationObj.listContainerClass).on(eventObj);
                     }
                 },
-
+                
+                // Add arrow events
                 addArrowsEvents : function() {
                     var self = this;
 
@@ -434,22 +449,34 @@
                         });
                     });
                 },
-
+                
+                // Animate previous element
                 animateToPrevElement : function(marginLeftValue) {
-                    if (marginLeftValue === 0) {
-                        this.replaceItem('begin');
-                    } else if (this.isSetPagination === true) {
+                	
+                	var self = this;
+                	
+                    if (this.isSetPagination === true) {
                         this.changePaginationItemPosition('begin');
                     }
-
+                	
+                    if (marginLeftValue >= 0) {
+                    	
+                    	this.listContainer.css({
+                        	marginLeft: -this.oneItemWidth + 'px'
+                        })
+                        
+                        this.replaceItem('begin');
+                    }
+                    
                     this.listContainer.animate({
                         marginLeft : '+=' + this.oneItemWidth + 'px'
                     }, this.animateObj.speed, this.animateObj.easing);
                 },
-
+                
+                // Animate next element
                 animateToNextElement : function(marginLeftValue) {
                     var width = 0, htmlTexts = new Array(), self = this;
-
+                    
                     if (this.isSetPagination === true) {
                         this.changePagination = true;
                     }
@@ -464,22 +491,22 @@
                             if (-marginLeftValue === width) {
 
                                 htmlTexts.reverse();
-
+                                
                                 for (var i = 0; i <= htmlTexts.length - 1; i++) {
-                                    this.sliderItems.eq(this.sliderItems.length - 1).after(htmlTexts[i]);
+                                    self.sliderItems.eq(self.sliderItems.length - 1).after(htmlTexts[i]);
                                 }
 
-                                this.sliderItems = this.sliderHolder.find(this.defaults.sliderItemClass);
-                                this.sliderItems.filter('.last').removeClass('last');
-                                this.sliderItems.eq(this.sliderItems.length - 1).addClass('last');
+                                self.sliderItems = self.sliderHolder.find(self.sliderItemClass);
+                                self.sliderItems.filter('.last').removeClass('last');
+                                self.sliderItems.eq(self.sliderItems.length - 1).addClass('last');
 
-                                this.listContainer.css({
+                                self.listContainer.css({
                                     marginLeft : 0
                                 });
                             }
                         });
                     }
-
+                    
                     this.listContainer.animate({
                         marginLeft : '-=' + this.oneItemWidth + 'px'
                     }, this.animateObj.speed, this.animateObj.easing, function() {
@@ -487,7 +514,8 @@
                         self.displayLeftBtn('block');
                     });
                 },
-
+                
+                // Add slider item events
                 addSliderItemEvents : function() {
 
                     this.sliderItems.on({
@@ -508,7 +536,8 @@
                     });
 
                 },
-
+                
+                // Add pagination events
                 addPaginationEvents : function() {
                     var self = this;
 
@@ -536,10 +565,13 @@
 
                             self.sliderItems.each(function(index) {
                                 if ($(this).data('slider-number') === activeEl.data('item-number')) {
+                                	$(this).addClass('selected');
                                     self.slideIndex = index + 1;
+                                } else {
+                                	$(this).removeClass('selected');
                                 }
                             });
-
+                            
                             if (activeNumber !== self.slideIndex) {
                                 activeNumber = self.slideIndex;
                             }
@@ -575,7 +607,8 @@
                     });
 
                 },
-
+                
+                // Animate margin left style
                 animateMarginLeft : function(type, num) {
                     var animObj, self = this;
 
@@ -592,7 +625,8 @@
                         self.displayLeftBtn('block');
                     });
                 },
-
+                
+                // Add slider plugin events
                 addSliderEvents : function() {
 
                     this.addAutoPlayEvents();
@@ -608,7 +642,8 @@
                         this.addPaginationEvents();
                     }
                 },
-
+                	
+                // Remove slider events
                 removeSliderItemEvents : function() {
                     this.sliderItems.off('.slideItemEvent');
                 }
